@@ -1,9 +1,22 @@
 .global main
+    .text
 
 main:
-	mov $mensagem, %rdi
-	call puts
-	ret
+        push    %rdi                    # save registers that puts uses
+        push    %rsi
+        sub     $8, %rsp                # must align stack before call
 
-mensagem:
-	.asciz	"Olá Mundo"
+        mov     (%rsi), %rdi            # the argument string to display
+        call    puts                    # print it
+
+        add     $8, %rsp                # restore %rsp to pre-aligned value
+        pop     %rsi                    # restore registers puts used
+        pop     %rdi
+
+        add     $8, %rsi                # point to next argument
+        dec     %rdi                    # count down
+        jnz     main                    # if not done counting keep going
+        ret
+
+format:
+        .asciz  "%s\n"
